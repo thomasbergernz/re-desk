@@ -372,6 +372,17 @@ body {
   word-break: break-word;
 }
 
+/* Linkified URLs inside descriptions and comments. */
+.body-link {
+  color: #0052cc;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.body-link:hover {
+  text-decoration: underline;
+}
+
 /* --- Reply box --- */
 .reply-box {
   border-top: 2px solid #ebecf0;

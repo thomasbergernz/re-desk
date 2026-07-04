@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { invoke, router } from '@forge/bridge';
+import RichText from './RichText';
 
 const DESC_STORAGE_KEY = 'redesk.description.collapsed';
 
@@ -227,7 +228,9 @@ const TicketDetail = ({ issueKey, onTicketChanged }) => {
               {descCollapsed ? '▸' : '▾'} Description
             </button>
             {!descCollapsed && (
-              <div className="ticket-description">{ticket.description}</div>
+              <div className="ticket-description">
+                <RichText text={ticket.description} />
+              </div>
             )}
           </div>
         )}
@@ -247,7 +250,9 @@ const TicketDetail = ({ issueKey, onTicketChanged }) => {
               {c.internal && <span className="internal-badge">Internal</span>}
               <span className="comment-date">{formatDateTime(c.created)}</span>
             </div>
-            <div className="comment-body">{c.body}</div>
+            <div className="comment-body">
+              <RichText text={c.body} />
+            </div>
           </div>
         ))}
       </div>

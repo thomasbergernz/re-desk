@@ -11,6 +11,12 @@ const resolver = new Resolver();
 function adfToText(node) {
   if (!node) return '';
   if (node.type === 'text') return node.text || '';
+  if (node.type === 'hardBreak') return '\n';
+  // Smart links (pasted URLs Jira upgraded to cards) carry their URL in
+  // attrs and have no text content — without this they vanish entirely.
+  if (['inlineCard', 'blockCard', 'embedCard'].includes(node.type)) {
+    return node.attrs?.url || '';
+  }
   const children = (node.content || []).map(adfToText).join('');
   // Block-level nodes get a trailing newline so paragraphs stay separated.
   if (['paragraph', 'heading', 'blockquote', 'listItem'].includes(node.type)) {

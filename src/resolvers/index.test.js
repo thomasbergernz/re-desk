@@ -221,6 +221,45 @@ describe('getTicket', () => {
     expect(result.transitions).toEqual([{ id: '11', name: 'Resolve', to: 'Resolved' }]);
   });
 
+  it('extracts smart-link URLs and hard breaks from ADF', async () => {
+    requestJira
+      .mockResolvedValueOnce(
+        jsonResponse({
+          key: 'FS-4',
+          fields: {
+            summary: 'Newsletter',
+            description: {
+              type: 'doc',
+              version: 1,
+              content: [
+                {
+                  type: 'paragraph',
+                  content: [
+                    { type: 'text', text: 'line one' },
+                    { type: 'hardBreak' },
+                    { type: 'text', text: 'line two ' },
+                    {
+                      type: 'inlineCard',
+                      attrs: { url: 'https://example.com/x' },
+                    },
+                  ],
+                },
+              ],
+            },
+            status: { name: 'Open' },
+          },
+        })
+      )
+      .mockResolvedValueOnce(jsonResponse({ comments: [] }))
+      .mockResolvedValueOnce(jsonResponse({ transitions: [] }));
+
+    const result = await handler.getTicket({ payload: { issueKey: 'FS-4' } });
+
+    expect(result.ticket.description).toBe(
+      'line one\nline two https://example.com/x'
+    );
+  });
+
   it('degrades to empty lists when comments and transitions fail', async () => {
     requestJira
       .mockResolvedValueOnce(
