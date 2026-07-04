@@ -56,3 +56,4 @@ jsm-forge-research.md
 manifest.yml
 
 /.forge/
+.gstack/
