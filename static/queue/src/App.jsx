@@ -207,6 +207,14 @@ const App = () => {
         {selectedKey ? (
           <TicketDetail
             issueKey={selectedKey}
+            // The queue's last-seen updated timestamp for this ticket
+            // (undefined once it left the needs-action list). The detail
+            // pane compares it against its own data and refreshes itself
+            // when another user changed the ticket, so it can't go stale
+            // and cause double handling.
+            remoteUpdated={
+              issues.find((i) => i.key === selectedKey)?.updated
+            }
             onTicketChanged={handleTicketChanged}
           />
         ) : (

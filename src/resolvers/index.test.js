@@ -247,6 +247,7 @@ describe('getTicket', () => {
               ],
             },
             status: { name: 'Open' },
+            updated: '2026-07-04T10:00:00.000+1200',
           },
         })
       )
@@ -258,6 +259,9 @@ describe('getTicket', () => {
     expect(result.ticket.description).toBe(
       'line one\nline two https://example.com/x'
     );
+    // The pane compares this against the queue's view to spot edits made
+    // by other users.
+    expect(result.ticket.updated).toBe('2026-07-04T10:00:00.000+1200');
   });
 
   it('degrades to empty lists when comments and transitions fail', async () => {

@@ -38,7 +38,7 @@ function formatDateTime(iso) {
  * status-at-submit dropdown, so an agent can answer, mark the ticket
  * "waiting for customer" and move on without leaving the queue.
  */
-const TicketDetail = ({ issueKey, onTicketChanged }) => {
+const TicketDetail = ({ issueKey, remoteUpdated, onTicketChanged }) => {
   const [state, setState] = useState({ status: 'loading' });
   const [reply, setReply] = useState('');
   const [internal, setInternal] = useState(false);
@@ -91,6 +91,21 @@ const TicketDetail = ({ issueKey, onTicketChanged }) => {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [issueKey]);
+
+  // The queue poll noticed the ticket changed under us (another agent
+  // replied or transitioned it) — its updated timestamp no longer matches
+  // ours. Refresh in the background so the pane shows the real state.
+  // Self-limiting: after the reload both timestamps match again, and a
+  // ticket that left the queue (remoteUpdated undefined) reloads once.
+  useEffect(() => {
+    if (state.status !== 'ready') return;
+    // Right after a row switch the pane still holds the previous ticket;
+    // the issueKey effect is already loading, don't double-fetch.
+    if (state.data.ticket.key !== issueKey) return;
+    if (remoteUpdated === state.data.ticket.updated) return;
+    load({ background: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [remoteUpdated]);
 
   const loadAssignees = async () => {
     if (assignees) return; // already loaded for this ticket

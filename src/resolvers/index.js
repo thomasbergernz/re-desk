@@ -161,7 +161,7 @@ resolver.define('getTicket', async (req) => {
   const [issueRes, commentsRes, transitionsRes] = await Promise.all([
     api
       .asUser()
-      .requestJira(route`/rest/api/3/issue/${issueKey}?fields=summary,description,status,reporter,assignee`),
+      .requestJira(route`/rest/api/3/issue/${issueKey}?fields=summary,description,status,reporter,assignee,updated`),
     api
       .asUser()
       .requestJira(route`/rest/api/3/issue/${issueKey}/comment?orderBy=created&maxResults=100`),
@@ -194,6 +194,9 @@ resolver.define('getTicket', async (req) => {
       status: issue.fields.status?.name,
       reporter: issue.fields.reporter?.displayName,
       assignee: issue.fields.assignee?.displayName,
+      // Compared against the queue's view of the ticket so the detail
+      // pane can spot edits made by someone else and refresh itself.
+      updated: issue.fields.updated,
     },
     comments: (comments.comments || []).map((c) => ({
       id: c.id,
