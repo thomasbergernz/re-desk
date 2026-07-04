@@ -186,17 +186,19 @@ const TicketDetail = ({ issueKey, remoteUpdated, onTicketChanged }) => {
   return (
     <div className="ticket-detail">
       <div className="ticket-header">
-        <a
-          href="#"
-          className="issue-key"
-          onClick={(e) => {
-            e.preventDefault();
-            router.open(`/browse/${issueKey}`);
-          }}
-        >
-          {issueKey}
-        </a>
-        <h3 className="ticket-summary">{ticket.summary}</h3>
+        <div className="ticket-title-row">
+          <a
+            href="#"
+            className="issue-key"
+            onClick={(e) => {
+              e.preventDefault();
+              router.open(`/browse/${issueKey}`);
+            }}
+          >
+            {issueKey}
+          </a>
+          <h3 className="ticket-summary">{ticket.summary}</h3>
+        </div>
         <div className="ticket-meta">
           <span className="lozenge">{ticket.status}</span>
           <span>Reporter: {ticket.reporter || '—'}</span>

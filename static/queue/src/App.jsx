@@ -212,17 +212,33 @@ const App = () => {
 
   const { issues, project, currentUser } = queue.data;
 
-  const filtered = issues.filter((i) => {
-    if (filter === 'unassigned') return !i.assigneeId;
-    if (filter === 'mine') return i.assigneeId === currentUser.accountId;
+  const matchesFilter = (i, f) => {
+    if (f === 'unassigned') return !i.assigneeId;
+    if (f === 'mine') return i.assigneeId === currentUser.accountId;
     return true;
-  });
+  };
+
+  const filtered = issues.filter((i) => matchesFilter(i, filter));
+
+  // Switching filters closes the detail pane if the open ticket isn't in the
+  // new view — avoids showing a ticket the filter says you're not looking at.
+  // Only fires on an explicit filter change, not on background refreshes.
+  const changeFilter = (f) => {
+    setFilter(f);
+    const selected = issues.find((i) => i.key === selectedKey);
+    if (selectedKey && (!selected || !matchesFilter(selected, f))) {
+      setSelectedKey(null);
+    }
+  };
 
   const FILTERS = [
     { id: 'all', label: 'All' },
     { id: 'unassigned', label: 'Unassigned' },
     { id: 'mine', label: 'Assigned to me' },
-  ];
+  ].map((f) => ({
+    ...f,
+    count: issues.filter((i) => matchesFilter(i, f.id)).length,
+  }));
 
   return (
     <div
@@ -230,12 +246,18 @@ const App = () => {
       ref={workspaceRef}
     >
       <div className="queue-pane" style={{ flex: `0 0 ${splitPct}%` }}>
-        <div className="queue-header">
+        <div className="queue-toolbar">
           <h2 className="queue-title">Needs action</h2>
-          <span className="queue-count">
-            {filtered.length} of {issues.length} ticket
-            {issues.length === 1 ? '' : 's'} in {project.key}
-          </span>
+          <span className="queue-count">in {project.key}</span>
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              className={filter === f.id ? 'filter-button active' : 'filter-button'}
+              onClick={() => changeFilter(f.id)}
+            >
+              {f.label} ({f.count})
+            </button>
+          ))}
           <button
             className="refresh-button"
             onClick={loadQueue}
@@ -243,17 +265,6 @@ const App = () => {
           >
             {refreshing ? 'Refreshing…' : 'Refresh'}
           </button>
-        </div>
-        <div className="filter-bar">
-          {FILTERS.map((f) => (
-            <button
-              key={f.id}
-              className={filter === f.id ? 'filter-button active' : 'filter-button'}
-              onClick={() => setFilter(f.id)}
-            >
-              {f.label}
-            </button>
-          ))}
         </div>
         {/* Fixed-height track so the bar appearing doesn't shift the table. */}
         <div className="progress-track">

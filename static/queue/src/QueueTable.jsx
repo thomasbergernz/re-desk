@@ -28,7 +28,7 @@ const QueueTable = ({ issues, selectedKey, onSelect }) => {
       <thead>
         <tr>
           <th>Key</th>
-          <th>Summary</th>
+          <th className="col-summary">Summary</th>
           <th>Reporter</th>
           <th>Status</th>
           <th>Assignee</th>
