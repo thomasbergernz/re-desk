@@ -93,26 +93,58 @@ body {
   opacity: 0.6;
 }
 
-/* --- Layout: table left, detail right --- */
+/* --- Layout: table left, draggable divider, detail right --- */
 .workspace {
   display: flex;
-  gap: 16px;
   height: 100vh;
   padding: 12px;
 }
 
+/* Text selection fights the drag, so suspend it workspace-wide. */
+.workspace.dragging {
+  cursor: col-resize;
+  user-select: none;
+}
+
 .queue-pane {
-  flex: 1 1 55%;
+  /* flex-basis is set inline from the persisted split percentage. */
   min-width: 0;
   overflow-y: auto;
+  padding-right: 8px;
+}
+
+.divider {
+  flex: 0 0 6px;
+  margin: 0 4px;
+  cursor: col-resize;
+  /* 1px visible line centered in a 6px grab area. */
+  background: linear-gradient(
+    to right,
+    transparent 2px,
+    #ebecf0 2px,
+    #ebecf0 3px,
+    transparent 3px
+  );
+  /* Without this, touch devices scroll instead of firing pointermove. */
+  touch-action: none;
+}
+
+.divider:hover,
+.workspace.dragging .divider {
+  background: linear-gradient(
+    to right,
+    transparent 2px,
+    #0052cc 2px,
+    #0052cc 3px,
+    transparent 3px
+  );
 }
 
 .detail-pane {
-  flex: 1 1 45%;
+  flex: 1 1 auto;
   min-width: 0;
   overflow-y: auto;
-  border-left: 1px solid #ebecf0;
-  padding-left: 16px;
+  padding-left: 8px;
 }
 
 /* --- Queue header --- */

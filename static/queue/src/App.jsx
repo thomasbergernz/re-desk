@@ -49,6 +49,35 @@ function saveSelection(key) {
   }
 }
 
+const SPLIT_STORAGE_KEY = 'redesk.queue.split';
+
+// Queue pane width as a % of the workspace. Clamped so neither pane can
+// be dragged into uselessness.
+const SPLIT_DEFAULT = 55;
+const SPLIT_MIN = 25;
+const SPLIT_MAX = 75;
+
+function clampSplit(pct) {
+  return Math.min(SPLIT_MAX, Math.max(SPLIT_MIN, pct));
+}
+
+function loadSavedSplit() {
+  try {
+    const saved = Number(window.localStorage.getItem(SPLIT_STORAGE_KEY));
+    return Number.isFinite(saved) && saved > 0 ? clampSplit(saved) : SPLIT_DEFAULT;
+  } catch {
+    return SPLIT_DEFAULT;
+  }
+}
+
+function saveSplit(pct) {
+  try {
+    window.localStorage.setItem(SPLIT_STORAGE_KEY, String(pct));
+  } catch {
+    // Storage unavailable — split just won't survive a reload.
+  }
+}
+
 /**
  * re-desk queue workspace.
  *
@@ -120,6 +149,38 @@ const App = () => {
     loadQueue();
   }, [loadQueue]);
 
+  // Draggable divider between the two panes. Pointer capture keeps the
+  // drag alive even when the cursor briefly leaves the 6px handle.
+  const [splitPct, setSplitPct] = useState(loadSavedSplit);
+  const [dragging, setDragging] = useState(false);
+  const workspaceRef = useRef(null);
+
+  const onDividerPointerDown = useCallback((e) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDragging(true);
+  }, []);
+
+  const onDividerPointerMove = useCallback((e) => {
+    if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+    const rect = workspaceRef.current?.getBoundingClientRect();
+    if (!rect || !rect.width) return;
+    setSplitPct(clampSplit(((e.clientX - rect.left) / rect.width) * 100));
+  }, []);
+
+  const onDividerPointerUp = useCallback((e) => {
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    setDragging(false);
+    setSplitPct((pct) => {
+      saveSplit(pct);
+      return pct;
+    });
+  }, []);
+
+  const onDividerDoubleClick = useCallback(() => {
+    setSplitPct(SPLIT_DEFAULT);
+    saveSplit(SPLIT_DEFAULT);
+  }, []);
+
   // Drop a restored selection whose ticket is no longer in the queue
   // (resolved or waiting since last session). Runs once on the first
   // successful load — later refreshes must not close the pane, e.g. right
@@ -164,8 +225,11 @@ const App = () => {
   ];
 
   return (
-    <div className="workspace">
-      <div className="queue-pane">
+    <div
+      className={dragging ? 'workspace dragging' : 'workspace'}
+      ref={workspaceRef}
+    >
+      <div className="queue-pane" style={{ flex: `0 0 ${splitPct}%` }}>
         <div className="queue-header">
           <h2 className="queue-title">Needs action</h2>
           <span className="queue-count">
@@ -203,6 +267,14 @@ const App = () => {
           />
         </div>
       </div>
+      <div
+        className="divider"
+        title="Drag to resize; double-click to reset"
+        onPointerDown={onDividerPointerDown}
+        onPointerMove={onDividerPointerMove}
+        onPointerUp={onDividerPointerUp}
+        onDoubleClick={onDividerDoubleClick}
+      />
       <div className="detail-pane">
         {selectedKey ? (
           <TicketDetail

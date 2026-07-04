@@ -2,8 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+From 2.1.0 on, version numbers follow the Forge app version assigned when the
+release is deployed to production (`forge deploy -e production`), so the
+changelog matches the app version site admins see. Earlier releases used
+SemVer.
+
+## [2.1.0] - 2026-07-04
+
+### Added
+
+- Draggable divider between the queue table and the detail pane: drag to
+  resize (clamped 25–75%), double-click to reset, chosen split remembered
+  across reloads
 
 ## [0.2.0] - 2026-07-04
 
