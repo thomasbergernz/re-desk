@@ -1,9 +1,9 @@
 Junban (順番 — means “order,” “sequence,” or “the proper arrangement of things.” It is used to refer to the prescribed or logical order in which items, actions, or events should occur.)
 
-Junban Desk replaces the default Jira Service Management queue views with a single,
+Junban Desk replaces the default Jira Service Management (JSM) queue views with a single,
 focused agent workspace: a "needs action" ticket table on the left and an inline
 ticket detail pane on the right. Agents triage, reply, and resolve without ever
-leaving the queue.
+leaving the queue, a Zendesk-style agent workspace for JSM. 
 
 - [Installation and setup](install.md)
 - [Support](support.md)
@@ -11,8 +11,8 @@ leaving the queue.
 
 ## The workspace
 
-Open any Jira Service Management project and choose **Junban Desk** in the project
-sidebar (under Queues). The workspace has two panes; drag the divider between
+Open any JSM project or space and choose **Junban Desk** in the 
+sidebar under Queues. The workspace has two panes; drag the divider between
 them to resize, or double-click it to reset.
 
 ![Junban Desk workspace](workspace.png)
