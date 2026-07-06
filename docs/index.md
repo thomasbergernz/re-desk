@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.png" alt="Junban Desk logo" width="110">
+</p>
+
 # Junban Desk — user guide
 
 Junban (順番 — means “order,” “sequence,” or “the proper arrangement of things.” It is used to refer to the prescribed or logical order in which items, actions, or events should occur.)
