@@ -8,6 +8,7 @@ leaving the queue.
 - [Installation and setup](install.md)
 - [Support](support.md)
 - [Privacy policy](privacy.md)
+- [Security policy](security.md)
 
 ## The workspace
 
